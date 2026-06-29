@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "▶ Teste: filterActiveProducts",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test#filterActiveProducts"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "▶ Testes de hoje (TODO 1-3)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "▶ Todos os testes do lab",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

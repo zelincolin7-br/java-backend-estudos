@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "name": "estudos-parent",
+      "path": "."
+    },
+    {
+      "name": "order-platform",
+      "path": "order-platform"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.maven.enabled": true,
+    "java.import.gradle.enabled": false,
+    "java.test.editor.enableShortcuts": true,
+    "java.debug.settings.onBuildFailureProceed": true,
+    "editor.codeLens": true,
+    "testing.gutterEnabled": true,
+    "java.jdt.ls.java.home": "C:/Program Files/Java/jdk-17",
+    "java.configuration.runtimes": [
+      {
+        "name": "JavaSE-17",
+        "path": "C:/Program Files/Java/jdk-17",
+        "default": true
+      }
+    ],
+    "maven.executable.path": "C:/apache-maven-3.9.6-bin/apache-maven-3.9.6/bin/mvn.cmd",
+    "java.compile.nullAnalysis.mode": "disabled",
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "python.testing.autoTestDiscoverOnSaveEnabled": false
+  },
+  "extensions": {
+    "recommendations": [
+      "vscjava.vscode-java-pack"
+    ]
+  }
+}

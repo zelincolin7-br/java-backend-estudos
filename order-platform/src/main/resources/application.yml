@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: order-platform
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order_platform
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

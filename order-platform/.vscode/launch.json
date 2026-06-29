@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "JUnit: arquivo atual",
+      "request": "launch",
+      "mainClass": "",
+      "projectName": "order-platform",
+      "shortenCommandLine": "argfile"
+    }
+  ]
+}

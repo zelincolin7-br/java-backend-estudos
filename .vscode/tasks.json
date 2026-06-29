@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "▶ Teste: filterActiveProducts",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test#filterActiveProducts",
+        "-f",
+        "order-platform/pom.xml"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "▶ Todos os testes do lab",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test",
+        "-f",
+        "order-platform/pom.xml"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
