@@ -2,6 +2,7 @@ package com.estudos.orderplatform.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +41,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.findAll()); 
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts(Pageable pageable) {
+        return ResponseEntity.ok(productService.findAll(pageable)); 
     }
 
     @GetMapping("/{id}")

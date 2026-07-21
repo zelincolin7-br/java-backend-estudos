@@ -2,6 +2,7 @@ package com.estudos.orderplatform.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.estudos.orderplatform.domain.Product;
@@ -33,8 +34,8 @@ public class ProductService {
         return new ProductResponseDto(savedProduct);
     }
     
-    public List<ProductResponseDto> findAll(){
-        return productRepository.findAll()
+    public List<ProductResponseDto> findAll(Pageable pageable){
+        return productRepository.findAll(pageable)
             .stream()
             .map(ProductResponseDto::new) 
             .toList();
