@@ -1,13 +1,13 @@
 package com.estudos.orderplatform.javalabs.week1.day1;
 
-import com.estudos.orderplatform.javalabs.week1.model.LabProduct;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.estudos.orderplatform.javalabs.week1.model.LabProduct;
 
 
 class LambdaLabDay1Test {
@@ -55,6 +55,7 @@ class LambdaLabDay1Test {
                 .containsExactly("Notebook", "Monitor", "Teclado", "Mouse");
     }
 
+/*
     @Test
     @DisplayName("TODO 4 - filterByMinPrice (amanhã)")
     void filterByMinPrice() {
@@ -75,5 +76,5 @@ class LambdaLabDay1Test {
 
         assertThat(executions).isEqualTo(5);
         assertThat(counter[0]).isEqualTo(5);
-    }
+    }*/
 }

@@ -1,21 +1,20 @@
 spring:
   application:
     name: order-platform
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/order_platform
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5433/order_platform_db
+    username: order_user
+    password: order_pass
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
 server:
   port: 8080
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
