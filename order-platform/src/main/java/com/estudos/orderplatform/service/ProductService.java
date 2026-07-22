@@ -1,7 +1,6 @@
 package com.estudos.orderplatform.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +33,9 @@ public class ProductService {
         return new ProductResponseDto(savedProduct);
     }
     
-    public List<ProductResponseDto> findAll(Pageable pageable){
+    public Page<ProductResponseDto> findAll(Pageable pageable){
         return productRepository.findAll(pageable)
-            .stream()
-            .map(ProductResponseDto::new) 
-            .toList();
+            .map(ProductResponseDto::new);
     }
 
     public ProductResponseDto findById(Long id) {
@@ -54,7 +51,7 @@ public class ProductService {
 
         Product product = productRepository.findById(id)
         
-            .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID: " + id));
 
         product.setSku(requestDto.sku());
         product.setName(requestDto.name());
