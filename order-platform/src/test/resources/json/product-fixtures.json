@@ -1,0 +1,17 @@
+{
+    "validProduct": {
+      "sku": "PROD-001",
+      "name": "Teclado RGB",
+      "price": 250.0
+    },
+    "invalidProduct": {
+      "sku": "",
+      "name": "",
+      "price": -10.0
+    },
+    "updateProduct": {
+      "sku": "PROD-001-UPDATED",
+      "name": "Teclado Mecânico RGB",
+      "price": 300.0
+    }
+  }
