@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender para Console exibindo JSON -->
+    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- Inclui nome do serviço nos logs -->
+            <customFields>{"app_name":"order-platform"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Raiz da aplicação usando o Appender JSON -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_JSON" />
+    </root>
+
+</configuration>

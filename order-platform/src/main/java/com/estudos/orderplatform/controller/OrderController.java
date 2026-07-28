@@ -23,10 +23,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/orders")
 @Tag(name = "Pedidos", description = "Endpoints para criação e consulta de pedidos de compra")
 public class OrderController {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderService orderService;
 
@@ -42,6 +47,9 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Um ou mais produtos informados não existem")
     })
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody @Valid OrderRequestDto requestDto) {
+        
+        log.info("Iniciando criacao de pedido para o payload: {}", requestDto);
+
         OrderResponseDto createdOrder = orderService.save(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
