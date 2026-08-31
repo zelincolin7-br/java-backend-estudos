@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
@@ -16,17 +17,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.core.MessagePostProcessor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.estudos.orderplatform.config.RabbitMQConfig;
 import com.estudos.orderplatform.domain.Order;
 import com.estudos.orderplatform.domain.OrderStatus;
 import com.estudos.orderplatform.domain.Product;
 import com.estudos.orderplatform.dto.OrderItemRequestDto;
 import com.estudos.orderplatform.dto.OrderRequestDto;
 import com.estudos.orderplatform.dto.OrderResponseDto;
+import com.estudos.orderplatform.event.OrderCreatedEvent;
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.repository.OrderRepository;
 import com.estudos.orderplatform.repository.ProductRepository;
@@ -39,6 +44,9 @@ class OrderServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
     @InjectMocks
     private OrderService orderService;
@@ -77,7 +85,12 @@ class OrderServiceTest {
 
         verify(productRepository,  times(1)).findById(1L);
         verify(productRepository, times(1)).findById(2L);
-        verify(orderRepository, times(1)).save(any(Order.class));        
+        verify(orderRepository, times(1)).save(any(Order.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(
+                eq(RabbitMQConfig.ORDER_EVENTS_EXCHANGE),
+                eq(RabbitMQConfig.ORDER_CREATED_ROUTING_KEY),
+                any(OrderCreatedEvent.class),
+                any(MessagePostProcessor.class));
 
     }
 
@@ -96,7 +109,12 @@ class OrderServiceTest {
         .hasMessageContaining("Produto não encontrado com o ID: 99");
 
         verify(productRepository, times(1)).findById(99L);
-        verify(productRepository, never()).save(any());
+        verify(orderRepository, never()).save(any());
+        verify(rabbitTemplate, never()).convertAndSend(
+                any(String.class),
+                any(String.class),
+                any(),
+                any(MessagePostProcessor.class));
     }
 
     @Test

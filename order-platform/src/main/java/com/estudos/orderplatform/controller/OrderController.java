@@ -51,6 +51,7 @@ public class OrderController {
         log.info("Iniciando criacao de pedido para o payload: {}", requestDto);
 
         OrderResponseDto createdOrder = orderService.save(requestDto);
+        log.info("Pedido criado via HTTP. orderId={}, total={}", createdOrder.id(), createdOrder.total());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 

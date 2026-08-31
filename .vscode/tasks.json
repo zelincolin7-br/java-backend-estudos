@@ -2,6 +2,24 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "▶ Subir order-platform",
+      "type": "shell",
+      "command": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && mvn -pl order-platform -DskipTests spring-boot:run",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "▶ Teste: filterActiveProducts",
       "type": "shell",
       "command": "mvn",

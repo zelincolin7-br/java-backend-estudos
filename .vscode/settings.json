@@ -1,18 +1,28 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.import.maven.enabled": true,
+  "java.debug.settings.forceBuildBeforeLaunch": true,
+  "java.debug.settings.console": "integratedTerminal",
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMap": {
+    "java": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && cd /home/lincoln/www/java-backend-estudos && mvn -pl order-platform -DskipTests spring-boot:run"
+  },
+  "code-runner.languageSelector": [
+    "javascript",
+    "python",
+    "typescript"
+  ],
   "java.test.editor.enableShortcuts": true,
   "editor.codeLens": true,
   "testing.gutterEnabled": true,
-  "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-17",
+  "java.jdt.ls.java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
   "java.configuration.runtimes": [
     {
-      "name": "JavaSE-17",
-      "path": "C:\\Program Files\\Java\\jdk-17",
+      "name": "JavaSE-21",
+      "path": "/usr/lib/jvm/java-21-openjdk-amd64",
       "default": true
     }
   ],
-  "maven.executable.path": "C:\\apache-maven-3.9.6-bin\\apache-maven-3.9.6\\bin\\mvn.cmd",
   "java.compile.nullAnalysis.mode": "disabled",
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": false,

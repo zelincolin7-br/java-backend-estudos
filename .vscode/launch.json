@@ -1,28 +1,25 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
         {
             "type": "java",
             "name": "OrderPlatformApplication",
             "request": "launch",
             "mainClass": "com.estudos.orderplatform.OrderPlatformApplication",
-            "projectName": "order-platform"
+            "projectName": "order-platform",
+            "cwd": "${workspaceFolder}/order-platform",
+            "console": "integratedTerminal",
+            "shortenCommandLine": "argfile",
+            "vmArgs": "-javaagent:${workspaceFolder}/order-platform/newrelic/newrelic.jar -Dnewrelic.config.file=${workspaceFolder}/order-platform/newrelic/newrelic.yml -Dnewrelic.environment=development"
         },
         {
             "type": "java",
             "name": "LambdaExamples",
             "request": "launch",
             "mainClass": "com.estudos.orderplatform.javalabs.week1.day1.LambdaExamples",
-            "projectName": "order-platform"
+            "projectName": "order-platform",
+            "console": "integratedTerminal",
+            "shortenCommandLine": "argfile"
         }
     ]
 }

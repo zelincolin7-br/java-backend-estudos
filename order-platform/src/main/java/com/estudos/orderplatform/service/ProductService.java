@@ -1,5 +1,7 @@
 package com.estudos.orderplatform.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,23 +15,24 @@ import com.estudos.orderplatform.repository.ProductRepository;
 @Service
 public class ProductService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
+
     private final ProductRepository productRepository;
 
-    // Injeção de dependência via construtor (Boa prática do Spring)
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
     public ProductResponseDto save(ProductRequestDto requestDto) {
-        // 1. Converte o DTO (record) para a entidade JPA
+        log.info("Persistindo produto sku={}, name={}", requestDto.sku(), requestDto.name());
         Product product = new Product(
             requestDto.sku(),
             requestDto.name(),
             requestDto.price()
         );
 
-        // 2. Salva no banco de dados através do repository
         Product savedProduct = productRepository.save(product);
+        log.info("Produto persistido. id={}", savedProduct.getId());
         return new ProductResponseDto(savedProduct);
     }
     
