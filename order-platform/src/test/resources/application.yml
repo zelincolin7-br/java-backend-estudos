@@ -1,17 +1,19 @@
 spring:
+  # Desativa a autoconfiguração do RabbitMQ para não tentar conectar na porta 5672 durante os testes
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
   datasource:
     url: jdbc:h2:mem:order_platform_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
     username: sa
     password:
     driver-class-name: org.h2.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
-  rabbitmq:
-    listener:
-      simple:
-        auto-startup: false
 
 management:
   health:
