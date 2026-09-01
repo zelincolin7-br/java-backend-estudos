@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: 1/5 - Baixando código do repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessário para análise de blame e histórico no SonarQube
 
       - name: 2/5 - Preparando ambiente Java e Maven
         run: |
@@ -22,13 +24,33 @@ jobs:
           echo "=== [END] Dependências carregadas com sucesso! ==="
 
       - name: 3/5 - Analisando código com SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           echo "=== [START] Iniciando análise do SonarQube ==="
-          # Seu comando do sonar aqui
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=order-platform \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
+            -Dsonar.token=${SONAR_TOKEN}
           echo "=== [END] Análise do SonarQube concluída! ==="
 
-      - name: 4/5 - Construindo e subindo os Containers Docker
+      - name: 4/5 - Gerando .env e subindo Containers Docker
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASS: ${{ secrets.RABBITMQ_PASS }}
         run: |
+          echo "=== [START] Gerando arquivo .env para os containers ==="
+          echo "POSTGRES_USER=${POSTGRES_USER}" > .env
+          echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env
+          echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
+          echo "RABBITMQ_USER=${RABBITMQ_USER}" >> .env
+          echo "RABBITMQ_PASS=${RABBITMQ_PASS}" >> .env
+          echo "=== [END] Arquivo .env gerado com sucesso! ==="
+
           echo "=== [START] Baixando imagens base do Docker e compilando a aplicação ==="
           docker compose up -d --build
           echo "=== [END] Containers iniciados com sucesso! ==="
