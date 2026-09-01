@@ -27,11 +27,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn clean test sonar:sonar \
+          mvn clean test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=order-platform-api \
             -Dsonar.projectName="Order Platform API" \
             -Dsonar.host.url=http://localhost:9000 \
-            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.token=$SONAR_TOKEN \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
   deploy-dev:
