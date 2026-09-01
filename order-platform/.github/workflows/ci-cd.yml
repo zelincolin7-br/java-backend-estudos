@@ -61,4 +61,4 @@ jobs:
     environment: production
     steps:
       - name: Realizar Deploy em Prod
-        run: echo "Executando processo de deploy no ambiente de PRODUÇÃO..."
+        run: echo "Executando processo de deploy no ambiente de PRODUÇÃO.. ."
