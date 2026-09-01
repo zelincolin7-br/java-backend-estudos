@@ -1,19 +1,42 @@
-# Maven
-**/target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-release.properties
+HELP.md
 
-# IDE
+# Variáveis de Ambiente e Segredos (CRÍTICO)
+.env
+*.env
+.env.local
+
+# Maven e Compilação
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+*.jar
+*.war
+*.ear
+
+# SonarQube & JaCoCo (arquivos temporários e cache local)
+.sonar/
+.scannerWork/
+
+# GitHub Self-Hosted Runner (se foi baixado dentro da pasta do projeto)
+actions-runner/
+
+# IDEs (IntelliJ / VS Code / Eclipse)
 .idea/
+*.iws
 *.iml
 *.ipr
-*.iws
+.vscode/
+.settings/
 .classpath
 .project
-.settings/
 
-# OS
+# Sistema Operacional e Logs
 .DS_Store
 Thumbs.db
+*.log
+
+# New Relic - arquivos locais, chave e logs
+newrelic/newrelic.jar
+newrelic/newrelic.yml
+newrelic/logs/
+newrelic/*.log
