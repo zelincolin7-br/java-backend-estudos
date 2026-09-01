@@ -17,11 +17,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configurar JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
 
       - name: Compilar, Executar Testes e Enviar para o SonarQube
         env:
@@ -41,8 +40,10 @@ jobs:
     runs-on: self-hosted
     environment: development
     steps:
-      - name: Realizar Deploy em Dev
-        run: echo "Executando processo de deploy no ambiente de DEV..."
+      - name: Deploy Container DEV (Porta 8081)
+        run: |
+          APP_PORT=8081 SPRING_PROFILES_ACTIVE=dev CONTAINER_NAME=order-platform-dev \
+          docker compose -p order-platform-dev up -d --build
 
   deploy-test:
     name: Deploy - Ambiente TEST
@@ -51,8 +52,10 @@ jobs:
     runs-on: self-hosted
     environment: testing
     steps:
-      - name: Realizar Deploy em Test
-        run: echo "Executando processo de deploy no ambiente de HOMOLOGAÇÃO..."
+      - name: Deploy Container TEST (Porta 8082)
+        run: |
+          APP_PORT=8082 SPRING_PROFILES_ACTIVE=test CONTAINER_NAME=order-platform-test \
+          docker compose -p order-platform-test up -d --build
 
   deploy-prod:
     name: Deploy - Ambiente PROD
@@ -61,5 +64,7 @@ jobs:
     runs-on: self-hosted
     environment: production
     steps:
-      - name: Realizar Deploy em Prod
-        run: echo "Executando processo de deploy no ambiente de PRODUÇÃO..."
+      - name: Deploy Container PROD (Porta 8080)
+        run: |
+          APP_PORT=8080 SPRING_PROFILES_ACTIVE=prod CONTAINER_NAME=order-platform-prod \
+          docker compose -p order-platform-prod up -d --build
