@@ -37,15 +37,15 @@ jobs:
 
       - name: 4/5 - Gerando .env e subindo Containers Docker
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
           RABBITMQ_PASS: ${{ secrets.RABBITMQ_PASS }}
         run: |
           echo "=== [START] Gerando arquivo .env para os containers ==="
-          echo "POSTGRES_USER=${POSTGRES_USER}" > .env
-          echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env
+          echo "POSTGRES_USER=${DB_USER}" > .env
+          echo "POSTGRES_PASSWORD=${DB_PASSWORD}" >> .env
           echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
           echo "RABBITMQ_USER=${RABBITMQ_USER}" >> .env
           echo "RABBITMQ_PASS=${RABBITMQ_PASS}" >> .env
