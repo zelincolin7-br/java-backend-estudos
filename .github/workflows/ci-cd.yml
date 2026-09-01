@@ -23,25 +23,14 @@ jobs:
           mvn dependency:go-offline -B
           echo "=== [END] Dependências carregadas com sucesso! ==="
 
-      - name: 3/5 - Analisando código com SonarQube
-        continue-on-error: true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          echo "=== [START] Iniciando análise do SonarQube ==="
-          mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
-            -Dsonar.projectKey=order-platform \
-            -Dsonar.host.url="http://localhost:9000" \
-            -Dsonar.token="${SONAR_TOKEN}"
-          echo "=== [END] Análise do SonarQube concluída! ==="
-
-      - name: 4/5 - Gerando .env e subindo Containers Docker
+      - name: 3/5 - Gerando .env e subindo Containers Docker
         env:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
           RABBITMQ_PASS: ${{ secrets.RABBITMQ_PASS }}
+          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
         run: |
           echo "=== [START] Gerando arquivo .env para os containers ==="
           echo "POSTGRES_USER=${DB_USER}" > .env
@@ -49,13 +38,33 @@ jobs:
           echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
           echo "RABBITMQ_USER=${RABBITMQ_USER}" >> .env
           echo "RABBITMQ_PASS=${RABBITMQ_PASS}" >> .env
+          echo "NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}" >> .env
           echo "=== [END] Arquivo .env gerado com sucesso! ==="
 
-          echo "=== [START] Baixando imagens base do Docker e compilando a aplicação ==="
+          echo "=== [START] Subindo os containers no Docker ==="
           docker compose up -d --build
           echo "=== [END] Containers iniciados com sucesso! ==="
 
-      - name: 5/5 - Verificando status dos serviços
+      - name: 4/5 - Aguardando SonarQube ficar online
         run: |
-          echo "=== Status dos containers rodando no Docker ==="
+          echo "=== [START] Aguardando o SonarQube inicializar na porta 9000 ==="
+          until curl -s http://localhost:9000/api/system/status | grep -q '"status":"UP"'; do
+            echo "SonarQube ainda está iniciando... aguardando 5 segundos."
+            sleep 5
+          done
+          echo "=== [END] SonarQube está pronto para receber análises! ==="
+
+      - name: 5/5 - Analisando código com SonarQube e Verificando Status
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          echo "=== [START] Executando análise do SonarQube ==="
+          mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
+            -Dsonar.projectKey=order-platform \
+            -Dsonar.host.url="http://localhost:9000" \
+            -Dsonar.token="${SONAR_TOKEN}"
+          echo "=== [END] Análise do SonarQube concluída! ==="
+
+          echo "=== Status final dos containers no Docker ==="
           docker compose ps

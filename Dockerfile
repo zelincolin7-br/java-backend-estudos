@@ -11,7 +11,14 @@ RUN mvn clean package -pl order-platform -am -DskipTests
 # Estágio 2: Imagem final
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
+
+# Copia o JAR compilado do estágio de build
 COPY --from=build /app/order-platform/target/*.jar app.jar
 
+# Copia a pasta do New Relic da raiz do projeto para o container
+COPY newrelic/ /app/newrelic/
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Executa o Java com o agente do New Relic ativo
+ENTRYPOINT ["java", "-javaagent:/app/newrelic/newrelic.jar", "-jar", "app.jar"]

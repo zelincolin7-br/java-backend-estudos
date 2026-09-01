@@ -17,7 +17,7 @@ target/
 .sonar/
 .scannerWork/
 
-# GitHub Self-Hosted Runner (se foi baixado dentro da pasta do projeto)
+# GitHub Self-Hosted Runner
 actions-runner/
 
 # IDEs (IntelliJ / VS Code / Eclipse)
@@ -35,8 +35,6 @@ actions-runner/
 Thumbs.db
 *.log
 
-# New Relic - arquivos locais, chave e logs
-newrelic/newrelic.jar
-newrelic/newrelic.yml
+# New Relic - Apenas logs e pastas temporárias (jar e yml são liberados para o Docker)
 newrelic/logs/
 newrelic/*.log
