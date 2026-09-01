@@ -2,17 +2,14 @@ name: Order Platform CI/CD Pipeline
 
 on:
   push:
-    branches: [ develop, staging, main ]
+    branches: [ develop, staging, main, master ]
   pull_request:
-    branches: [ develop, staging, main ]
+    branches: [ develop, staging, main, master ]
 
 jobs:
-  # -------------------------------------------------------------
-  # JOB 1: Compilação, Testes Unitários/Integração e SonarQube
-  # -------------------------------------------------------------
   code-quality:
     name: Build, Test & Quality Gate (SonarQube)
-    runs-on: self-hosted # Executa diretamente no runner local da sua máquina
+    runs-on: self-hosted
 
     steps:
       - name: Checkout do Código
@@ -36,9 +33,6 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
-  # -------------------------------------------------------------
-  # JOB 2: Deploy no Ambiente de Desenvolvimento (DEV)
-  # -------------------------------------------------------------
   deploy-dev:
     name: Deploy - Ambiente DEV
     needs: code-quality
@@ -49,9 +43,6 @@ jobs:
       - name: Realizar Deploy em Dev
         run: echo "Executando processo de deploy no ambiente de DEV..."
 
-  # -------------------------------------------------------------
-  # JOB 3: Deploy no Ambiente de Homologação (TEST)
-  # -------------------------------------------------------------
   deploy-test:
     name: Deploy - Ambiente TEST
     needs: code-quality
@@ -62,13 +53,10 @@ jobs:
       - name: Realizar Deploy em Test
         run: echo "Executando processo de deploy no ambiente de HOMOLOGAÇÃO..."
 
-  # -------------------------------------------------------------
-  # JOB 4: Deploy no Ambiente de Produção (PROD)
-  # -------------------------------------------------------------
   deploy-prod:
     name: Deploy - Ambiente PROD
     needs: code-quality
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
     runs-on: self-hosted
     environment: production
     steps:
