@@ -1,0 +1,76 @@
+name: Order Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ develop, staging, main ]
+  pull_request:
+    branches: [ develop, staging, main ]
+
+jobs:
+  # -------------------------------------------------------------
+  # JOB 1: Compilação, Testes Unitários/Integração e SonarQube
+  # -------------------------------------------------------------
+  code-quality:
+    name: Build, Test & Quality Gate (SonarQube)
+    runs-on: self-hosted # Executa diretamente no runner local da sua máquina
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compilar, Executar Testes e Enviar para o SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn clean test sonar:sonar \
+            -Dsonar.projectKey=order-platform-api \
+            -Dsonar.projectName="Order Platform API" \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+  # -------------------------------------------------------------
+  # JOB 2: Deploy no Ambiente de Desenvolvimento (DEV)
+  # -------------------------------------------------------------
+  deploy-dev:
+    name: Deploy - Ambiente DEV
+    needs: code-quality
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: development
+    steps:
+      - name: Realizar Deploy em Dev
+        run: echo "Executando processo de deploy no ambiente de DEV..."
+
+  # -------------------------------------------------------------
+  # JOB 3: Deploy no Ambiente de Homologação (TEST)
+  # -------------------------------------------------------------
+  deploy-test:
+    name: Deploy - Ambiente TEST
+    needs: code-quality
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: testing
+    steps:
+      - name: Realizar Deploy em Test
+        run: echo "Executando processo de deploy no ambiente de HOMOLOGAÇÃO..."
+
+  # -------------------------------------------------------------
+  # JOB 4: Deploy no Ambiente de Produção (PROD)
+  # -------------------------------------------------------------
+  deploy-prod:
+    name: Deploy - Ambiente PROD
+    needs: code-quality
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: Realizar Deploy em Prod
+        run: echo "Executando processo de deploy no ambiente de PRODUÇÃO..."
