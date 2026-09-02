@@ -48,7 +48,17 @@ public class OrderCreatedListener {
                     traceId,
                     spanId);
 
-            log.info("Evento de pedido processado com sucesso. orderId={}", event.orderId());
+            //log.info("Evento de pedido processado com sucesso. orderId={}", event.orderId());
+            boolean simularErro = true;
+
+if (simularErro) {
+    throw new RuntimeException("Erro simulado no banco de dados!");
+}
+
+log.info(
+    "Evento de pedido processado com sucesso. orderId={}",
+    event.orderId()
+);
         } catch (RuntimeException exception) {
             log.error("Erro ao processar evento de pedido criado. orderId={}", event.orderId(), exception);
             NewRelic.noticeError(exception);

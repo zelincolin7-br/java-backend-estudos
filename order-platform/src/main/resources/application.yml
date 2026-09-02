@@ -21,6 +21,15 @@ spring:
     port: 5672
     username: guest
     password: guest
+    # --- Configuração de Retry + Backoff Exponencial ---
+    listener:
+      simple:
+        retry:
+          enabled: true           # Ativa a tentativa automática de reprocessamento
+          max-attempts: 3         # Quantidade máxima de tentativas (1 original + 2 retries)
+          initial-interval: 1000ms # 1ª espera: 1 segundo
+          multiplier: 2.0         # Fator de multiplicação (1s -> 2s)
+          max-interval: 10000ms   # Teto máximo de espera entre tentativas
 
 management:
   endpoints:
