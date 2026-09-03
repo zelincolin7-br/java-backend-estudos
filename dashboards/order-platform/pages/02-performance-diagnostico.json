@@ -7,7 +7,7 @@
       "layout": { "column": 1, "row": 1, "width": 6, "height": 4 },
       "visualization": { "id": "viz.line" },
       "rawConfiguration": {
-        "nrqlQueries": [{ "accountIds": [], "query": "SELECT percentiles(duration, 50, 90, 99) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago" }]
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT percentile(duration, 50, 90, 99) FROM Transaction WHERE appName = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago" }]
       }
     },
     {
@@ -15,7 +15,7 @@
       "layout": { "column": 7, "row": 1, "width": 6, "height": 4 },
       "visualization": { "id": "viz.pie" },
       "rawConfiguration": {
-        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago" }]
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE appName = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago" }]
       }
     },
     {
@@ -23,7 +23,7 @@
       "layout": { "column": 1, "row": 5, "width": 6, "height": 4 },
       "visualization": { "id": "viz.table" },
       "rawConfiguration": {
-        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE entity.name = 'Order Platform API' SINCE 1 hour ago LIMIT 50" }]
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE appName = 'Order Platform API' SINCE 1 hour ago LIMIT 50" }]
       }
     },
     {
@@ -31,7 +31,7 @@
       "layout": { "column": 7, "row": 5, "width": 6, "height": 4 },
       "visualization": { "id": "viz.table" },
       "rawConfiguration": {
-        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE entity.name = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50" }]
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE appName = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50" }]
       }
     }
   ]

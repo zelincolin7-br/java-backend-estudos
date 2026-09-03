@@ -128,7 +128,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT percentiles(duration, 50, 90, 99) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago"
+                "query": "SELECT percentile(duration, 50, 90, 99) FROM Transaction WHERE appName = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago"
               }
             ]
           }
@@ -148,7 +148,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago"
+                "query": "SELECT count(*) FROM Transaction WHERE appName = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago"
               }
             ]
           }
@@ -168,7 +168,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE entity.name = 'Order Platform API' SINCE 1 hour ago LIMIT 50"
+                "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE appName = 'Order Platform API' SINCE 1 hour ago LIMIT 50"
               }
             ]
           }
@@ -188,7 +188,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE entity.name = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50"
+                "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE appName = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50"
               }
             ]
           }
