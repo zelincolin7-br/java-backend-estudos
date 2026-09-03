@@ -1,0 +1,245 @@
+{
+  "name": "Order Platform - Observability",
+  "description": "Painel unificado de observabilidade da Order Platform gerado via CI/CD.",
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Vis\u00e3o Geral & Neg\u00f3cio",
+      "description": "Volumetria e fluxo de processamento de Pedidos (HTTP & RabbitMQ)",
+      "widgets": [
+        {
+          "title": "Pedidos Criados (HTTP 2xx)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' AND http.statusCode LIKE '2%' SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Pedidos Processados (RabbitMQ)",
+          "layout": {
+            "column": 4,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Other' SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Mensagens Pendentes na Fila",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT latest(rabbitmq.queue.messagesReady) FROM Metric WHERE entity.name = 'Order Platform API' SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Taxa de Erro Global (%)",
+          "layout": {
+            "column": 10,
+            "row": 1,
+            "width": 3,
+            "height": 3
+          },
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE entity.name = 'Order Platform API' SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Fluxo de Cria\u00e7\u00e3o vs Processamento (Minuto a Minuto)",
+          "layout": {
+            "column": 1,
+            "row": 4,
+            "width": 12,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' FACET transactionType TIMESERIES 1 minute SINCE 1 hour ago"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Performance & Diagn\u00f3stico",
+      "description": "Lat\u00eancias de API, erros HTTP e rastreabilidade de requisi\u00e7\u00f5es",
+      "widgets": [
+        {
+          "title": "Tempo de Resposta (Percentis p50, p90, p99)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT percentiles(duration, 50, 90, 99) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Distribui\u00e7\u00e3o de Erros HTTP (4xx / 5xx)",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.pie"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Diagn\u00f3stico de Erros Recentes",
+          "layout": {
+            "column": 1,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE entity.name = 'Order Platform API' SINCE 1 hour ago LIMIT 50"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Rastreabilidade de Traces com Falha/Lentos",
+          "layout": {
+            "column": 7,
+            "row": 5,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.table"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE entity.name = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Infraestrutura & JVM",
+      "description": "M\u00e9tricas de consumo de Heap JVM e utiliza\u00e7\u00e3o de CPU",
+      "widgets": [
+        {
+          "title": "Uso de Mem\u00f3ria Heap JVM (MB)",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT average(apm.service.memory.heap.used) / 1024 / 1024 AS 'Heap Usada (MB)', average(apm.service.memory.heap.max) / 1024 / 1024 AS 'Heap M\u00e1xima (MB)' FROM Metric WHERE entity.name = 'Order Platform API' TIMESERIES SINCE 1 hour ago"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Uso de CPU (% Aplica\u00e7\u00e3o vs Sistema)",
+          "layout": {
+            "column": 7,
+            "row": 1,
+            "width": 6,
+            "height": 4
+          },
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountIds": [],
+                "query": "SELECT average(apm.service.cpu.usertime.utilization) * 100 AS 'CPU Processo (%)', average(apm.service.cpu.systemtime.utilization) * 100 AS 'CPU Sistema (%)' FROM Metric WHERE entity.name = 'Order Platform API' TIMESERIES SINCE 1 hour ago"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

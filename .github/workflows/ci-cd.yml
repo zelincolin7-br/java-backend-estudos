@@ -10,20 +10,20 @@ on:
 jobs:
   build-and-deploy:
     runs-on: self-hosted
-    
+
     steps:
-      - name: 1/5 - Baixando código do repositório
+      - name: 1/6 - Baixando código do repositório
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 2/5 - Preparando ambiente Java e Maven
+      - name: 2/6 - Preparando ambiente Java e Maven
         run: |
           echo "=== [START] Baixando/Verificando dependências do Maven ==="
           mvn dependency:go-offline -B
           echo "=== [END] Dependências carregadas com sucesso! ==="
 
-      - name: 3/5 - Gerando .env e subindo Containers Docker
+      - name: 3/6 - Gerando .env e subindo Containers Docker
         env:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -45,7 +45,7 @@ jobs:
           docker compose up -d --build
           echo "=== [END] Containers iniciados com sucesso! ==="
 
-      - name: 4/5 - Aguardando SonarQube ficar online
+      - name: 4/6 - Aguardando SonarQube ficar online
         run: |
           echo "=== [START] Aguardando o SonarQube inicializar na porta 9000 ==="
           until curl -s http://localhost:9000/api/system/status | grep -q '"status":"UP"'; do
@@ -54,7 +54,7 @@ jobs:
           done
           echo "=== [END] SonarQube está pronto para receber análises! ==="
 
-      - name: 5/5 - Analisando código com SonarQube e Verificando Status
+      - name: 5/6 - Analisando código com SonarQube e Verificando Status
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -68,3 +68,46 @@ jobs:
 
           echo "=== Status final dos containers no Docker ==="
           docker compose ps
+
+      - name: 6/6 - Compilando e Atualizando Dashboard do New Relic
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
+        env:
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+        run: |
+          echo "=== [START] Processando Dashboard Modular do New Relic ==="
+
+          # 1. Compila as abas (.json) e queries (.nrql) usando o script Python
+          python3 dashboards/order-platform/build.py
+
+          echo "=== [START] Publicando/Atualizando Dashboard via NerdGraph API ==="
+          
+          # 2. Carrega o JSON compilado em uma variável
+          DASHBOARD_JSON=$(cat dashboards/order-platform/dashboard-compiled.json)
+
+          # 3. Monta o payload GraphQL com jq
+          PAYLOAD=$(jq -n --arg accountId "$NEW_RELIC_ACCOUNT_ID" --argjson dash "$DASHBOARD_JSON" '{
+            query: "mutation CreateOrUpdateDashboard($accountId: Int!, $dashboard: DashboardInput!) { dashboardCreate(accountId: $accountId, dashboard: $dashboard) { errors { description type } entityResult { guid name } } }",
+            variables: {
+              accountId: ($accountId | tonumber),
+              dashboard: $dash
+            }
+          }')
+
+          # 4. Envia para a API do New Relic
+          RESPONSE=$(curl -s -X POST "https://api.newrelic.com/graphql" \
+            -H "Content-Type: application/json" \
+            -H "API-Key: $NEW_RELIC_API_KEY" \
+            -d "$PAYLOAD")
+
+          echo "Resposta do New Relic:"
+          echo "$RESPONSE" | jq .
+
+          # 5. Validação de erro
+          ERRORS=$(echo "$RESPONSE" | jq '.data.dashboardCreate.errors')
+          if [ "$ERRORS" != "null" ] && [ "$ERRORS" != "[]" ]; then
+            echo "Erro ao registrar dashboard no New Relic!"
+            exit 1
+          fi
+
+          echo "=== [END] Dashboard do New Relic atualizado com sucesso! ==="

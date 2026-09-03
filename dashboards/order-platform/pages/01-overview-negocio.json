@@ -1,0 +1,46 @@
+{
+  "name": "Visão Geral & Negócio",
+  "description": "Volumetria e fluxo de processamento de Pedidos (HTTP & RabbitMQ)",
+  "widgets": [
+    {
+      "title": "Pedidos Criados (HTTP 2xx)",
+      "layout": { "column": 1, "row": 1, "width": 3, "height": 3 },
+      "visualization": { "id": "viz.billboard" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' AND http.statusCode LIKE '2%' SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Pedidos Processados (RabbitMQ)",
+      "layout": { "column": 4, "row": 1, "width": 3, "height": 3 },
+      "visualization": { "id": "viz.billboard" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Other' SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Mensagens Pendentes na Fila",
+      "layout": { "column": 7, "row": 1, "width": 3, "height": 3 },
+      "visualization": { "id": "viz.billboard" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT latest(rabbitmq.queue.messagesReady) FROM Metric WHERE entity.name = 'Order Platform API' SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Taxa de Erro Global (%)",
+      "layout": { "column": 10, "row": 1, "width": 3, "height": 3 },
+      "visualization": { "id": "viz.billboard" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE entity.name = 'Order Platform API' SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Fluxo de Criação vs Processamento (Minuto a Minuto)",
+      "layout": { "column": 1, "row": 4, "width": 12, "height": 4 },
+      "visualization": { "id": "viz.line" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' FACET transactionType TIMESERIES 1 minute SINCE 1 hour ago" }]
+      }
+    }
+  ]
+}

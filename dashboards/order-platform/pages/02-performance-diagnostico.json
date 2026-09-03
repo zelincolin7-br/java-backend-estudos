@@ -1,0 +1,38 @@
+{
+  "name": "Performance & Diagnóstico",
+  "description": "Latências de API, erros HTTP e rastreabilidade de requisições",
+  "widgets": [
+    {
+      "title": "Tempo de Resposta (Percentis p50, p90, p99)",
+      "layout": { "column": 1, "row": 1, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.line" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT percentiles(duration, 50, 90, 99) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' TIMESERIES SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Distribuição de Erros HTTP (4xx / 5xx)",
+      "layout": { "column": 7, "row": 1, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.pie" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND http.statusCode >= '400' FACET http.statusCode, name SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Diagnóstico de Erros Recentes",
+      "layout": { "column": 1, "row": 5, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.table" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, `error.type`, `error.message`, name FROM TransactionError WHERE entity.name = 'Order Platform API' SINCE 1 hour ago LIMIT 50" }]
+      }
+    },
+    {
+      "title": "Rastreabilidade de Traces com Falha/Lentos",
+      "layout": { "column": 7, "row": 5, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.table" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT timestamp, trace.id, spanId, name, duration FROM Transaction WHERE entity.name = 'Order Platform API' AND (error IS true OR duration > 1) SINCE 1 hour ago LIMIT 50" }]
+      }
+    }
+  ]
+}

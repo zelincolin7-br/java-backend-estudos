@@ -1,0 +1,22 @@
+{
+  "name": "Infraestrutura & JVM",
+  "description": "Métricas de consumo de Heap JVM e utilização de CPU",
+  "widgets": [
+    {
+      "title": "Uso de Memória Heap JVM (MB)",
+      "layout": { "column": 1, "row": 1, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.line" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT average(apm.service.memory.heap.used) / 1024 / 1024 AS 'Heap Usada (MB)', average(apm.service.memory.heap.max) / 1024 / 1024 AS 'Heap Máxima (MB)' FROM Metric WHERE entity.name = 'Order Platform API' TIMESERIES SINCE 1 hour ago" }]
+      }
+    },
+    {
+      "title": "Uso de CPU (% Aplicação vs Sistema)",
+      "layout": { "column": 7, "row": 1, "width": 6, "height": 4 },
+      "visualization": { "id": "viz.line" },
+      "rawConfiguration": {
+        "nrqlQueries": [{ "accountIds": [], "query": "SELECT average(apm.service.cpu.usertime.utilization) * 100 AS 'CPU Processo (%)', average(apm.service.cpu.systemtime.utilization) * 100 AS 'CPU Sistema (%)' FROM Metric WHERE entity.name = 'Order Platform API' TIMESERIES SINCE 1 hour ago" }]
+      }
+    }
+  ]
+}
