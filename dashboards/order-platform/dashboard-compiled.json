@@ -22,7 +22,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Web' AND http.statusCode LIKE '2%' SINCE 1 hour ago"
+                "query": "SELECT count(*) AS 'Total Criados' FROM Transaction WHERE name = 'WebTransaction/SpringController/api/orders (POST)' AND httpResponseCode LIKE '2%' SINCE 1 hour ago"
               }
             ]
           }
@@ -42,7 +42,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' AND transactionType = 'Other' SINCE 1 hour ago"
+                "query": "SELECT count(*) AS 'Total Processados' FROM Log WHERE message LIKE '%Evento de pedido processado com sucesso%'   AND entity.name = 'Order Platform API' SINCE 1 HOUR AGO"
               }
             ]
           }
@@ -62,7 +62,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT latest(rabbitmq.queue.messagesReady) FROM Metric WHERE entity.name = 'Order Platform API' SINCE 1 hour ago"
+                "query": "SELECT   (filter(count(*), WHERE message LIKE '%Pedido criado com sucesso%') -    filter(count(*), WHERE message LIKE '%Evento de pedido processado com sucesso%'))    AS 'Pendentes'FROM Log WHERE entity.name = 'Order Platform API'SINCE 1 HOUR AGO"
               }
             ]
           }
@@ -82,7 +82,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT percentage(count(*), WHERE error IS true) FROM Transaction WHERE entity.name = 'Order Platform API' SINCE 1 hour ago"
+                "query": "SELECT count(*) FROM Transaction WHERE (name = 'WebTransaction/SpringController/api/orders (POST)' OR name = 'WebTransaction/SpringController/api/products (POST)') AND (httpResponseCode LIKE '4%' OR httpResponseCode LIKE '5%') FACET name, httpResponseCode SINCE 1 HOUR AGO "
               }
             ]
           }
@@ -102,7 +102,7 @@
             "nrqlQueries": [
               {
                 "accountIds": [],
-                "query": "SELECT count(*) FROM Transaction WHERE entity.name = 'Order Platform API' FACET transactionType TIMESERIES 1 minute SINCE 1 hour ago"
+                "query": "SELECT count(*) FROM Transaction WHERE appName = 'Order Platform API' FACET cases(WHERE name LIKE '%OrderController%' OR name LIKE '%/orders%' AS 'Pedidos Criados (HTTP)', WHERE transactionType = 'OtherTransaction' OR name LIKE '%Rabbit%' AS 'Pedidos Processados (Queue)')TIMESERIES 1 minute SINCE 1 hour ago"
               }
             ]
           }
