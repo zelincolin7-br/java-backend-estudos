@@ -64,7 +64,6 @@ jobs:
             -Dsonar.projectKey=order-platform \
             -Dsonar.host.url="http://localhost:9000" \
             -Dsonar.token="${SONAR_TOKEN}"
-            -pl order-platform
           echo "=== [END] Análise do SonarQube concluída! ==="
 
           echo "=== Status final dos containers no Docker ==="
