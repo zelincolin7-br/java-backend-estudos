@@ -24,6 +24,7 @@ spring:
     # --- Configuração de Retry + Backoff Exponencial ---
     listener:
       simple:
+        default-requeue-rejected: false # Garante envio para a DLQ após esgotar os retries
         retry:
           enabled: true           # Ativa a tentativa automática de reprocessamento
           max-attempts: 3         # Quantidade máxima de tentativas (1 original + 2 retries)
