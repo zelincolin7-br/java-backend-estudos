@@ -9,6 +9,10 @@ terraform {
       source  = "cyrilgdn/rabbitmq"
       version = "~> 1.8.0"
     }
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0.2"
+    }
   }
 }
 
@@ -27,3 +31,5 @@ provider "rabbitmq" {
   username = var.rabbitmq_user
   password = var.rabbitmq_password
 }
+
+

@@ -38,3 +38,9 @@ Thumbs.db
 # New Relic - Apenas logs e pastas temporárias (jar e yml são liberados para o Docker)
 newrelic/logs/
 newrelic/*.log
+
+
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
