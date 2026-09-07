@@ -31,7 +31,7 @@ jobs:
             -Dsonar.projectKey=order-platform-api \
             -Dsonar.projectName="Order Platform API" \
             -Dsonar.host.url=http://localhost:9000 \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.token=$SONAR_TOKEN
 
   deploy-dev:
     name: Deploy - Ambiente DEV
