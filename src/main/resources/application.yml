@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: order-platform
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:postgres-local}
+    username: ${db_admin_user}
+    password: ${db_admin_password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASS}
+    # --- Configuração de Retry + Backoff Exponencial ---
+    listener:
+      simple:
+        default-requeue-rejected: false # Garante envio para a DLQ após esgotar os retries
+        retry:
+          enabled: true           # Ativa a tentativa automática de reprocessamento
+          max-attempts: 3         # Quantidade máxima de tentativas (1 original + 2 retries)
+          initial-interval: 1000ms # 1ª espera: 1 segundo
+          multiplier: 2.0         # Fator de multiplicação (1s -> 2s)
+          max-interval: 10000ms   # Teto máximo de espera entre tentativas
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+
+server:
+  port: 8080

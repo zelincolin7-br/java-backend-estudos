@@ -7,19 +7,21 @@
             "request": "launch",
             "mainClass": "com.estudos.orderplatform.OrderPlatformApplication",
             "projectName": "order-platform",
-            "cwd": "${workspaceFolder}/order-platform",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "shortenCommandLine": "argfile",
-            "vmArgs": "-javaagent:${workspaceFolder}/order-platform/newrelic/newrelic.jar -Dnewrelic.config.file=${workspaceFolder}/order-platform/newrelic/newrelic.yml -Dnewrelic.environment=development"
+            "vmArgs": "-javaagent:${workspaceFolder}/newrelic/newrelic.jar -Dnewrelic.config.file=${workspaceFolder}/newrelic/newrelic.yml -Dnewrelic.environment=development"
         },
         {
             "type": "java",
-            "name": "LambdaExamples",
+            "name": "Order Platform com New Relic",
             "request": "launch",
-            "mainClass": "com.estudos.orderplatform.javalabs.week1.day1.LambdaExamples",
+            "mainClass": "com.estudos.orderplatform.OrderPlatformApplication",
             "projectName": "order-platform",
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "shortenCommandLine": "argfile"
+            "shortenCommandLine": "argfile",
+            "vmArgs": "-javaagent:${workspaceFolder}/newrelic/newrelic.jar -Dnewrelic.config.file=${workspaceFolder}/newrelic/newrelic.yml -Dnewrelic.environment=development"
         }
     ]
 }

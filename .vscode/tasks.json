@@ -4,7 +4,7 @@
     {
       "label": "▶ Subir order-platform",
       "type": "shell",
-      "command": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && mvn -pl order-platform -DskipTests spring-boot:run",
+      "command": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && mvn -DskipTests spring-boot:run",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -25,9 +25,7 @@
       "command": "mvn",
       "args": [
         "test",
-        "-Dtest=LambdaLabDay1Test#filterActiveProducts",
-        "-f",
-        "order-platform/pom.xml"
+        "-Dtest=LambdaLabDay1Test#filterActiveProducts"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -44,14 +42,30 @@
       "problemMatcher": []
     },
     {
+      "label": "▶ Testes de hoje (TODO 1-3)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "test",
+        "-Dtest=LambdaLabDay1Test"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "▶ Todos os testes do lab",
       "type": "shell",
       "command": "mvn",
       "args": [
         "test",
-        "-Dtest=LambdaLabDay1Test",
-        "-f",
-        "order-platform/pom.xml"
+        "-Dtest=LambdaLabDay1Test"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

@@ -1,113 +1,64 @@
 name: Order Platform CI/CD Pipeline
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Permite disparar manualmente na aba Actions
   push:
     branches: [ develop, staging, main, master ]
   pull_request:
     branches: [ develop, staging, main, master ]
 
 jobs:
-  build-and-deploy:
+  code-quality:
+    name: Build, Test & Quality Gate (SonarQube)
     runs-on: self-hosted
 
     steps:
-      - name: 1/6 - Baixando código do repositório
+      - name: Checkout do Código
         uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
         with:
-          fetch-depth: 0
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
-      - name: 2/6 - Preparando ambiente Java e Maven
-        run: |
-          echo "=== [START] Baixando/Verificando dependências do Maven ==="
-          mvn dependency:go-offline -B
-          echo "=== [END] Dependências carregadas com sucesso! ==="
-
-      - name: 3/6 - Gerando .env e subindo Containers Docker
-        env:
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          RABBITMQ_USER: ${{ secrets.RABBITMQ_USER }}
-          RABBITMQ_PASS: ${{ secrets.RABBITMQ_PASS }}
-          NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY }}
-        run: |
-          echo "=== [START] Gerando arquivo .env para os containers ==="
-          echo "POSTGRES_USER=${DB_USER}" > .env
-          echo "POSTGRES_PASSWORD=${DB_PASSWORD}" >> .env
-          echo "POSTGRES_DB=${POSTGRES_DB}" >> .env
-          echo "RABBITMQ_USER=${RABBITMQ_USER}" >> .env
-          echo "RABBITMQ_PASS=${RABBITMQ_PASS}" >> .env
-          echo "NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}" >> .env
-          echo "=== [END] Arquivo .env gerado com sucesso! ==="
-
-          echo "=== [START] Subindo os containers no Docker ==="
-          docker compose up -d --build
-          echo "=== [END] Containers iniciados com sucesso! ==="
-
-      - name: 4/6 - Aguardando SonarQube ficar online
-        run: |
-          echo "=== [START] Aguardando o SonarQube inicializar na porta 9000 ==="
-          until curl -s http://localhost:9000/api/system/status | grep -q '"status":"UP"'; do
-            echo "SonarQube ainda está iniciando... aguardando 5 segundos."
-            sleep 5
-          done
-          echo "=== [END] SonarQube está pronto para receber análises! ==="
-
-      - name: 5/6 - Analisando código com SonarQube e Verificando Status
-        continue-on-error: true
+      - name: Compilar, Executar Testes e Enviar para o SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "=== [START] Executando análise do SonarQube ==="
-          mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
-            -Dsonar.projectKey=order-platform \
-            -Dsonar.host.url="http://localhost:9000" \
-            -Dsonar.token="${SONAR_TOKEN}"
-          echo "=== [END] Análise do SonarQube concluída! ==="
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=order-platform-api \
+            -Dsonar.projectName="Order Platform API" \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.login=$SONAR_TOKEN
 
-          echo "=== Status final dos containers no Docker ==="
-          docker compose ps
+  deploy-dev:
+    name: Deploy - Ambiente DEV
+    needs: code-quality
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: development
+    steps:
+      - name: Realizar Deploy em Dev
+        run: echo "Executando processo de deploy no ambiente de DEV..."
 
-      - name: 6/6 - Compilando e Atualizando Dashboard do New Relic
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
-        env:
-          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
-        run: |
-          echo "=== [START] Processando Dashboard Modular do New Relic ==="
+  deploy-test:
+    name: Deploy - Ambiente TEST
+    needs: code-quality
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: testing
+    steps:
+      - name: Realizar Deploy em Test
+        run: echo "Executando processo de deploy no ambiente de HOMOLOGAÇÃO..."
 
-          # 1. Compila as abas (.json) e queries (.nrql) usando o script Python
-          python3 dashboards/order-platform/build.py
-
-          echo "=== [START] Publicando/Atualizando Dashboard via NerdGraph API ==="
-          
-          # 2. Carrega o JSON compilado em uma variável
-          DASHBOARD_JSON=$(cat dashboards/order-platform/dashboard-compiled.json)
-
-          # 3. Monta o payload GraphQL com jq
-          PAYLOAD=$(jq -n --arg accountId "$NEW_RELIC_ACCOUNT_ID" --argjson dash "$DASHBOARD_JSON" '{
-            query: "mutation CreateOrUpdateDashboard($accountId: Int!, $dashboard: DashboardInput!) { dashboardCreate(accountId: $accountId, dashboard: $dashboard) { errors { description type } entityResult { guid name } } }",
-            variables: {
-              accountId: ($accountId | tonumber),
-              dashboard: $dash
-            }
-          }')
-
-          # 4. Envia para a API do New Relic
-          RESPONSE=$(curl -s -X POST "https://api.newrelic.com/graphql" \
-            -H "Content-Type: application/json" \
-            -H "API-Key: $NEW_RELIC_API_KEY" \
-            -d "$PAYLOAD")
-
-          echo "Resposta do New Relic:"
-          echo "$RESPONSE" | jq .
-
-          # 5. Validação de erro
-          ERRORS=$(echo "$RESPONSE" | jq '.data.dashboardCreate.errors')
-          if [ "$ERRORS" != "null" ] && [ "$ERRORS" != "[]" ]; then
-            echo "Erro ao registrar dashboard no New Relic!"
-            exit 1
-          fi
-
-          echo "=== [END] Dashboard do New Relic atualizado com sucesso! ==="
+  deploy-prod:
+    name: Deploy - Ambiente PROD
+    needs: code-quality
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: Realizar Deploy em Prod
+        run: echo "Executando processo de deploy no ambiente de PRODUÇÃO..."

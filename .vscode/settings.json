@@ -5,7 +5,7 @@
   "java.debug.settings.console": "integratedTerminal",
   "code-runner.runInTerminal": true,
   "code-runner.executorMap": {
-    "java": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && cd /home/lincoln/www/java-backend-estudos && mvn -pl order-platform -DskipTests spring-boot:run"
+    "java": "export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && mvn -DskipTests spring-boot:run"
   },
   "code-runner.languageSelector": [
     "javascript",
