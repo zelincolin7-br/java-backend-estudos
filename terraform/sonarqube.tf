@@ -19,9 +19,8 @@ resource "docker_container" "sonarqube" {
 
   env = [
     "SONAR_SEARCH_JAVAADDITIONALOPTS=-Dnode.store.allow_mmap=false",
-    "SONAR_JAVA_OPTS=-Xms512m -Xmx512m",
-    "SONAR_WEB_JAVAOPTS=-Xms512m -Xmx512m",
-    "SONAR_CE_JAVAOPTS=-Xms512m -Xmx512m"
+    "SONAR_WEB_JAVAOPTS=-Xms512m -Xmx1024m",
+    "SONAR_CE_JAVAOPTS=-Xms512m -Xmx1024m"
   ]
 
   restart = "unless-stopped"
