@@ -1,5 +1,5 @@
 # Configuração do provedor Docker
-provider "docker" {}
+
 
 # Imagem oficial do SonarQube Community LTS
 resource "docker_image" "sonarqube" {
@@ -14,7 +14,7 @@ resource "docker_container" "sonarqube" {
 
   ports {
     internal = 9000
-    external = 9001
+    external = 9000
   }
 
   env = [

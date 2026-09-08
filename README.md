@@ -8,6 +8,8 @@ Serviço do ecossistema de pedidos focado no processamento assíncrono de evento
 
 - **Java 21** & **Spring Boot 3.4**
 - **Spring AMQP (RabbitMQ)** — Mensageria e processamento de eventos
+- **PostgreSQL** — Banco de dados relacional
+- **Terraform** & **Docker** — Provisionamento da infraestrutura local como código (IaC)
 - **Testcontainers** — Testes de integração com containers reais Docker
 - **Awaitility** — Asserções para testes assíncronos
 - **New Relic Agent & Logs** — Observabilidade, rastreamento distribuído e métricas de erro
@@ -24,9 +26,10 @@ A aplicação utiliza o padrão de **Dead Letter Exchange (DLX)** para garantir 
 
 | Recurso | Nome / Identificador | Tipo / Descrição |
 | :--- | :--- | :--- |
-| **Exchange Principal** | `order.v1.events` | `DirectExchange` para eventos de pedidos |
-| **Fila Principal** | `order.created.queue` | Armazena eventos de pedidos a serem processados |
-| **Routing Key Principal** | `order.created` | Chave de roteamento para novos pedidos |
+| **Exchange Principal** | `order.events` | `TopicExchange` para eventos da plataforma |
+| **Fila de Inventário** | `inventory.order-created.queue` | Armazena eventos de criação para o inventário |
+| **Fila de Pagamento** | `payment.order-created.queue` | Armazena eventos de criação para pagamentos |
+| **Fila de Notificação** | `notification.order-status.queue` | Armazena atualizações de status de pedidos |
 | **Exchange de DLQ (DLX)** | `order.v1.events.dlx` | `DirectExchange` para direcionamento de erros |
 | **Fila de DLQ** | `order.created.dlq` | Armazena mensagens após esgotar tentativas |
 
@@ -45,26 +48,20 @@ A aplicação utiliza o padrão de **Dead Letter Exchange (DLX)** para garantir 
 
 ---
 
-## 🧪 Estratégia de Testes e Integração
+## 🚀 Como Executar o Projeto
 
-A aplicação conta com uma suíte de testes automatizados focada na validação do comportamento real da infraestrutura.
-
-### Testes de Integração com Testcontainers (`OrderListenerDlqTest`)
-
-Em vez de simular o broker via Mocks, os testes de integração sobem um container Docker real do RabbitMQ (`rabbitmq:3.12-management`) de forma efêmera durante a execução da suíte JUnit.
-
-- **Isolamento de Ambiente**: Porta e host são sorteados dinamicamente via `@DynamicPropertySource`.
-- **Validação de DLQ**: Garante que o fluxo de retries seja totalmente executado e que a mensagem chegue à DLQ sem alterar código de produção.
-- **Validação Assíncrona**: Utilização da biblioteca **Awaitility** para aguardar a confirmação de roteamento na DLQ sem uso de pausas estáticas (`Thread.sleep`).
+### 📋 Pré-requisitos
+- **Java 21** (JDK 21 ou superior)
+- **Maven 3.8+**
+- **Docker** e **Docker Compose** (ou Docker Engine em execução)
+- **Terraform 1.5+** (para provisionar os containers e recursos locais)
 
 ---
 
-## 🚀 Como Executar o Projeto
+### 🐳 1. Subindo a Infraestrutura Local (Terraform + Docker)
 
-### Pré-requisitos
-- **Java 21** instalado
-- **Docker** em execução (necessário para os testes de integração com Testcontainers)
+A infraestrutura necessária para o funcionamento local (PostgreSQL, RabbitMQ com Management e SonarQube) é provisionada e gerenciada via Terraform.
 
-### Executar os Testes Automatizados
-```bash
-mvn clean test
+1. Acesse o diretório do Terraform na raiz do projeto:
+   ```bash
+   cd terraform

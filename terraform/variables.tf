@@ -21,7 +21,7 @@ variable "db_admin_password" {
 
 variable "rabbitmq_host" {
   type    = string
-  default = "http://localhost"
+  default = "localhost"
 }
 
 variable "rabbitmq_port" {
