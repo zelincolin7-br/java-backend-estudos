@@ -32,7 +32,7 @@ resource "docker_container" "sonarqube" {
   env = [
     "SONAR_SEARCH_JAVAADDITIONALOPTS=-Dnode.store.allow_mmap=false",
     "SONAR_WEB_JAVAOPTS=-Xms512m -Xmx1024m",
-    "SONAR_CE_JAVAOPTS=-Xms512m -Xmx1024m"
+    "SONAR_CE_JAVAOPTS=-Xms512m -Xmx1536m"
   ]
 
   # Mapeamento dos volumes para salvar as configurações
