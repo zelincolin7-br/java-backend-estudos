@@ -29,11 +29,11 @@ resource "docker_container" "sonarqube" {
     external = 9000
   }
 
-  env = [
-  "SONAR_SEARCH_JAVAADDITIONALOPTS=-Dnode.store.allow_mmap=false -Des.index.blocks.read_only_allow_delete=null",
-  "SONAR_WEB_JAVAOPTS=-Xms512m -Xmx1024m",
-  "SONAR_CE_JAVAOPTS=-Xms512m -Xmx1536m"
-]
+ env = [
+    "SONAR_SEARCH_JAVAADDITIONALOPTS=-Dnode.store.allow_mmap=false -Dcluster.routing.allocation.disk.watermark.flood_stage=10gb -Dcluster.routing.allocation.disk.watermark.high=12gb -Dcluster.routing.allocation.disk.watermark.low=15gb -Des.index.blocks.read_only_allow_delete=false",
+    "SONAR_WEB_JAVAOPTS=-Xms512m -Xmx1024m",
+    "SONAR_CE_JAVAOPTS=-Xms512m -Xmx1024m"
+  ]
 
   # Mapeamento dos volumes para salvar as configurações
   volumes {
