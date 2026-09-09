@@ -18,6 +18,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -51,11 +52,22 @@ public class OrderService {
         log.info("Pedido criado com sucesso no PostgreSQL com ID: {} | Cliente: {} | Total: R$ {}", 
             savedOrder.getId(), dto.customerId(), savedOrder.getTotal());
 
+        // Mapeia os itens do pedido para uma lista de Map com os detalhes dos produtos
+        List<Map<String, Object>> itemPayloads = savedOrder.getItems().stream()
+        .map(item -> Map.<String, Object>of(
+            "productId", item.getProduct().getId(),
+            "productName", item.getProduct().getName(),
+            "quantity", item.getQuantity(),
+            "price", item.getPrice()            
+        ))
+        .toList();    
+
         // Métricas e Atributos Customizados no New Relic
         NewRelic.addCustomParameter("order.id", savedOrder.getId());
         NewRelic.addCustomParameter("order.customerId", dto.customerId());
         NewRelic.addCustomParameter("order.totalAmount", savedOrder.getTotal().doubleValue());
         NewRelic.addCustomParameter("order.itemsCount", savedOrder.getItems().size());
+
 
         // Evento para o RabbitMQ (consumido pelo MongoDB Audit Service)
         OrderAuditRequestDTO event = new OrderAuditRequestDTO(
@@ -66,7 +78,8 @@ public class OrderService {
             Map.of(
                 "customerId", dto.customerId(),
                 "totalAmount", savedOrder.getTotal(),
-                "itemsCount", savedOrder.getItems().size()
+                "itemsCount", savedOrder.getItems().size(),
+                "items", itemPayloads
             )
         );
 

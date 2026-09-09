@@ -1,31 +1,31 @@
 package com.estudos.orderplatform.service;
 
-
 import com.estudos.orderplatform.audit.document.OrderAuditLog;
 import com.estudos.orderplatform.dto.OrderAuditRequestDTO;
 import com.estudos.orderplatform.repository.mongo.OrderAuditLogRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderAuditService {
 
     private final OrderAuditLogRepository auditRepository;
 
-    public OrderAuditService(OrderAuditLogRepository auditRepository) {
-        this.auditRepository = auditRepository;
-    }
-
     // Registra um novo evento de auditoria no Mongo
     public OrderAuditLog logOrderEvent(OrderAuditRequestDTO request) {
-        OrderAuditLog log = new OrderAuditLog(
-            request.orderId(),
-            request.eventType(),
-            request.previousStatus(),
-            request.newStatus(),
-            request.payload()
-        );
+        OrderAuditLog log = OrderAuditLog.builder()
+            .orderId(request.orderId())
+            .eventType(request.eventType())
+            .previousStatus(request.previousStatus())
+            .newStatus(request.newStatus())
+            .payload(request.payload())
+            .createdAt(Instant.now())
+            .build();
+
         return auditRepository.save(log);
     }
 
