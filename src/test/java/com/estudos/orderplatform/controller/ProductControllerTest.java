@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.estudos.orderplatform.dto.ProductRequestDto;
+import com.estudos.orderplatform.dto.ProductRequestDTO;
 import com.estudos.orderplatform.dto.ProductResponseDto;
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.service.ProductService;

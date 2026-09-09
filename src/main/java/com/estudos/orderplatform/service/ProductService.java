@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.estudos.orderplatform.domain.Product;
-import com.estudos.orderplatform.dto.ProductRequestDto;
+import com.estudos.orderplatform.dto.ProductRequestDTO;
 import com.estudos.orderplatform.dto.ProductResponseDto;
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.repository.ProductRepository;
@@ -23,7 +23,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public ProductResponseDto save(ProductRequestDto requestDto) {
+    public ProductResponseDto save(ProductRequestDTO requestDto) {
         log.info("Persistindo produto sku={}, name={}", requestDto.sku(), requestDto.name());
         Product product = new Product(
             requestDto.sku(),
@@ -50,7 +50,7 @@ public class ProductService {
 
     }
 
-    public ProductResponseDto update(Long id, ProductRequestDto requestDto) {
+    public ProductResponseDto update(Long id, ProductRequestDTO requestDto) {
 
         Product product = productRepository.findById(id)
         

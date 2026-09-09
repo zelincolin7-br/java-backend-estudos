@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.estudos.orderplatform.dto.ProductRequestDto;
+import com.estudos.orderplatform.dto.ProductRequestDTO;
 import com.estudos.orderplatform.dto.ProductResponseDto;
 import com.estudos.orderplatform.service.ProductService;
 
@@ -47,7 +47,7 @@ public class ProductController {
         @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos (validação do DTO)"),
         @ApiResponse(responseCode = "409", description = "Conflito: SKU já cadastrado no sistetma" ) 
     })
-    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto requestDto) {
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDTO requestDto) {
         log.info("Cadastrando produto sku={}", requestDto.sku());
         ProductResponseDto savedProduct = productService.save(requestDto);
         log.info("Produto cadastrado. id={}, sku={}", savedProduct.id(), savedProduct.sku());
@@ -74,7 +74,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(
             @PathVariable Long id,
-            @RequestBody @Valid ProductRequestDto requestDto) {
+            @RequestBody @Valid ProductRequestDTO requestDto) {
         return ResponseEntity.ok(productService.update(id, requestDto));
     }
 }

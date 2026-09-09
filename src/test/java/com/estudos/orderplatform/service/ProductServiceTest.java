@@ -22,7 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.estudos.orderplatform.domain.Product;
-import com.estudos.orderplatform.dto.ProductRequestDto;
+import com.estudos.orderplatform.dto.ProductRequestDTO;
 import com.estudos.orderplatform.dto.ProductResponseDto;
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.repository.ProductRepository;

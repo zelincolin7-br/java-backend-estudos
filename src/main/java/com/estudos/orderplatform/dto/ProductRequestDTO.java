@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record ProductRequestDto(
+public record ProductRequestDTO(
         @Schema(description = "SKU único do produto", example = "PROD-1001")
         @NotBlank(message = "O SKU é obrigatório")
         String sku,

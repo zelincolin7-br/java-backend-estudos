@@ -1,21 +1,17 @@
 package com.estudos.orderplatform.domain;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
+@Getter
 @Entity
 @Table(name = "tb_order")
 public class Order {
@@ -24,14 +20,15 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true )    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
     public Order() {
@@ -44,31 +41,20 @@ public class Order {
         item.setOrder(this);
     }
 
-    public Double getTotal() {
+    public void removeItem(OrderItem item) {
+        items.remove(item);
+        item.setOrder(null);
+    }
+
+    public BigDecimal getTotal() {
         return items.stream()
-            .mapToDouble(OrderItem::getSubTotal)
-            .sum();
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
+            .map(OrderItem::getSubTotal)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public List<OrderItem> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     @Override
@@ -76,14 +62,11 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(id, order.id);
+        return id != null && Objects.equals(id, order.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return getClass().hashCode();
     }
-
-
-
 }
