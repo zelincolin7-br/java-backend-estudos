@@ -21,6 +21,10 @@ public class RabbitMQConfig {
     public static final String ORDER_CREATED_QUEUE = "order.created.notification.queue";
     public static final String ORDER_CREATED_ROUTING_KEY = "order.created";
 
+    // Módulo de Auditoria (MongoDB)
+    public static final String ORDER_AUDIT_QUEUE = "order.audit.queue";
+    public static final String ORDER_AUDIT_ROUTING_KEY = "order.#"; // Captura qualquer evento que comece com order.
+
     // Constantes para a Dead Letter Queue (DLQ)
     public static final String ORDER_EVENTS_DLX = "order.events.dlx";
     public static final String ORDER_CREATED_DLQ = "order.created.notification.dlq";
@@ -54,6 +58,27 @@ public class RabbitMQConfig {
                 .to(orderEventsExchange)
                 .with(ORDER_CREATED_ROUTING_KEY);
     }
+
+    // --- NOVA CONFIGURAÇÃO: Fila e Binding para Auditoria no Mongo ---
+    @Bean
+    public Queue orderAuditQueue() {
+        return QueueBuilder.durable(ORDER_AUDIT_QUEUE)
+                .deadLetterExchange(ORDER_EVENTS_DLX)
+                .deadLetterRoutingKey(ORDER_CREATED_DLQ_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding orderAuditBinding(
+            Queue orderAuditQueue,
+            TopicExchange orderEventsExchange
+    ) {
+        return BindingBuilder
+                .bind(orderAuditQueue)
+                .to(orderEventsExchange)
+                .with(ORDER_AUDIT_ROUTING_KEY);
+    }
+    // -----------------------------------------------------------------
 
     // 2. Fila de Dead Letter (DLQ)
     @Bean
@@ -91,13 +116,7 @@ public class RabbitMQConfig {
     ) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
-
-        /*
-         * Desativado nesta implementação porque a propagação será
-         * controlada diretamente pela API do agente New Relic.
-         */
         rabbitTemplate.setObservationEnabled(false);
-
         return rabbitTemplate;
     }
 
@@ -115,13 +134,7 @@ public class RabbitMQConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter);
-
-        /*
-         * Evita a criação de um contexto Micrometer independente
-         * durante a primeira validação do New Relic.
-         */
         factory.setObservationEnabled(false);
-
         return factory;
     }
 }

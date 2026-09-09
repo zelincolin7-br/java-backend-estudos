@@ -2,6 +2,7 @@ spring:
   application:
     name: order-platform
 
+  # Configuração do PostgreSQL
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:order_db}
     username: ${db_admin_user:postgres}
@@ -17,9 +18,20 @@ spring:
       hibernate:
         format_sql: true
 
+  # Configuração do MongoDB
+  data:
+    mongodb:
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      database: ${MONGO_DB:order_platform}
+      username: ${MONGO_USER:admin}
+      password: ${MONGO_PASS:adminpass}
+      authentication-database: admin
+
+  # Configuração do RabbitMQ
   rabbitmq:
-    host: localhost
-    port: 5672
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:guest}
     password: ${RABBITMQ_PASS:guest}
     # --- Configuração de Retry + Backoff Exponencial ---
