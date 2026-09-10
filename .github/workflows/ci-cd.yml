@@ -44,21 +44,7 @@ jobs:
     environment: development
     steps:
       - name: Checkout do Código no Servidor (Dev)
-        uses: actions/checkout@v4
-
-      - name: Gerar arquivo .env no servidor (Dev)
-        run: |
-          cat << EOF > /home/lincoln/www/order-platform/.env
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
-          RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
-          NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
-          APP_PORT=8080
-          CONTAINER_NAME=order-platform-api
-          SPRING_PROFILES_ACTIVE=dev
-          EOF
+        uses: actions/checkout@v4     
 
       - name: Realizar Deploy e Subir Containers em Dev
         working-directory: /home/lincoln/www/order-platform
@@ -74,21 +60,7 @@ jobs:
     environment: testing
     steps:
       - name: Checkout do Código no Servidor (Test)
-        uses: actions/checkout@v4
-
-      - name: Gerar arquivo .env no servidor (Test)
-        run: |
-          cat << EOF > /home/lincoln/www/order-platform/.env
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
-          RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
-          NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
-          APP_PORT=8080
-          CONTAINER_NAME=order-platform-api
-          SPRING_PROFILES_ACTIVE=test
-          EOF
+        uses: actions/checkout@v4      
 
       - name: Realizar Deploy e Subir Containers em Test
         working-directory: /home/lincoln/www/order-platform
@@ -105,20 +77,6 @@ jobs:
     steps:
       - name: Checkout do Código no Servidor (Prod)
         uses: actions/checkout@v4
-
-      - name: Gerar arquivo .env no servidor (Prod)
-        run: |
-          cat << EOF > /home/lincoln/www/order-platform/.env
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
-          RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
-          NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
-          APP_PORT=8080
-          CONTAINER_NAME=order-platform-api
-          SPRING_PROFILES_ACTIVE=production
-          EOF
 
       - name: Realizar Deploy e Subir Containers em Prod
         working-directory: /home/lincoln/www/order-platform
