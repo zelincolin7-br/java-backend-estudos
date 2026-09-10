@@ -34,7 +34,6 @@ public class OrderAuditController {
     }
 
     public ResponseEntity<List<OrderAuditLog>> getActiveOrders() {
-
         List<OrderAuditLog> orders = auditService.findActiveOrders();
         return ResponseEntity.ok(orders);
     }

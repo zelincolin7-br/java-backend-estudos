@@ -4,7 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import com.estudos.orderplatform.audit.document.OrderAuditLog;
-import com.estudos.orderplatform.domain.Order;
 import com.estudos.orderplatform.domain.OrderStatus;
 
 import java.util.List;
@@ -16,5 +15,5 @@ public interface OrderAuditLogRepository extends MongoRepository<OrderAuditLog, 
     List<OrderAuditLog> findByOrderIdOrderByCreatedAtDesc(Long orderId);
 
      // Busca apenas os pedidos que importam para o fluxo ativo da cozinha
-     List<Order> findByStatusIn(List<OrderStatus> statuses);
+     List<OrderAuditLog> findByStatusIn(List<OrderStatus> statuses);
 }

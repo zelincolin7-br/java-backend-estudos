@@ -38,16 +38,14 @@ public class OrderAuditService {
     }
 
     // Consulta todos os pedidos ativos
-    public List<OrderResponseDTO> findActiveOrders() {
+    public List<OrderAuditLog> findActiveOrders() {
         List<OrderStatus> activeStatuses = List.of(
             OrderStatus.PAID,
             OrderStatus.PREPARING,
             OrderStatus.READY
         );
 
-        List<Order> orders = auditRepository.findByStatusIn(activeStatuses);
-        return orders.stream()
-                .map(OrderResponseDTO::fromEntity)
-                .toList();
+        List<OrderAuditLog> orders = auditRepository.findByStatusIn(activeStatuses);
+        return orders;
     }
 }
