@@ -57,13 +57,14 @@ jobs:
           NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
           APP_PORT=8080
           CONTAINER_NAME=order-platform-api
+          SPRING_PROFILES_ACTIVE=dev
           EOF
 
       - name: Realizar Deploy e Subir Containers em Dev
         working-directory: /home/lincoln/www/order-platform
         run: |
-          docker compose down
-          docker compose up -d --build
+          docker compose --env-file .env down
+          docker compose --env-file .env up -d --build
 
   deploy-test:
     name: Deploy - Ambiente TEST
@@ -86,13 +87,14 @@ jobs:
           NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
           APP_PORT=8080
           CONTAINER_NAME=order-platform-api
+          SPRING_PROFILES_ACTIVE=test
           EOF
 
       - name: Realizar Deploy e Subir Containers em Test
         working-directory: /home/lincoln/www/order-platform
         run: |
-          docker compose down
-          docker compose up -d --build
+          docker compose --env-file .env down
+          docker compose --env-file .env up -d --build
 
   deploy-prod:
     name: Deploy - Ambiente PROD
@@ -115,10 +117,11 @@ jobs:
           NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
           APP_PORT=8080
           CONTAINER_NAME=order-platform-api
+          SPRING_PROFILES_ACTIVE=production
           EOF
 
       - name: Realizar Deploy e Subir Containers em Prod
         working-directory: /home/lincoln/www/order-platform
         run: |
-          docker compose down
-          docker compose up -d --build
+          docker compose --env-file .env down
+          docker compose --env-file .env up -d --build

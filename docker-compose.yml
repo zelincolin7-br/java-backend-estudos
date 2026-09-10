@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # --- APLICAÇÃO SPRING BOOT ---
   order-platform-api:
