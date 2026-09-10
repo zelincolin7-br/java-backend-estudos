@@ -1,7 +1,10 @@
 package com.estudos.orderplatform.service;
 
 import com.estudos.orderplatform.audit.document.OrderAuditLog;
+import com.estudos.orderplatform.domain.Order;
+import com.estudos.orderplatform.domain.OrderStatus;
 import com.estudos.orderplatform.dto.OrderAuditRequestDTO;
+import com.estudos.orderplatform.dto.OrderResponseDTO;
 import com.estudos.orderplatform.repository.mongo.OrderAuditLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,5 +35,19 @@ public class OrderAuditService {
     // Consulta todo o histórico de auditoria de um pedido
     public List<OrderAuditLog> getAuditHistoryByOrderId(Long orderId) {
         return auditRepository.findByOrderIdOrderByCreatedAtDesc(orderId);
+    }
+
+    // Consulta todos os pedidos ativos
+    public List<OrderResponseDTO> findActiveOrders() {
+        List<OrderStatus> activeStatuses = List.of(
+            OrderStatus.PAID,
+            OrderStatus.PREPARING,
+            OrderStatus.READY
+        );
+
+        List<Order> orders = auditRepository.findByStatusIn(activeStatuses);
+        return orders.stream()
+                .map(OrderResponseDTO::fromEntity)
+                .toList();
     }
 }

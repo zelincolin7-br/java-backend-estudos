@@ -32,4 +32,10 @@ public class OrderAuditController {
         List<OrderAuditLog> history = auditService.getAuditHistoryByOrderId(orderId);
         return ResponseEntity.ok(history);
     }
+
+    public ResponseEntity<List<OrderAuditLog>> getActiveOrders() {
+
+        List<OrderAuditLog> orders = auditService.findActiveOrders();
+        return ResponseEntity.ok(orders);
+    }
 }
