@@ -25,6 +25,10 @@ public class RabbitMQConfig {
     public static final String ORDER_AUDIT_QUEUE = "order.audit.queue";
     public static final String ORDER_AUDIT_ROUTING_KEY = "order.#"; // Captura qualquer evento que comece com order.
 
+    // Módulo da Cozinha (WebSocket)
+    public static final String KITCHEN_ORDER_CREATED_QUEUE = "kitchen.order-created.queue";
+    public static final String KITCHEN_ORDER_CREATED_ROUTING_KEY = "order.created.#";
+
     // Constantes para a Dead Letter Queue (DLQ)
     public static final String ORDER_EVENTS_DLX = "order.events.dlx";
     public static final String ORDER_CREATED_DLQ = "order.created.notification.dlq";
@@ -59,7 +63,7 @@ public class RabbitMQConfig {
                 .with(ORDER_CREATED_ROUTING_KEY);
     }
 
-    // --- NOVA CONFIGURAÇÃO: Fila e Binding para Auditoria no Mongo ---
+    // --- Fila e Binding para Auditoria no Mongo ---
     @Bean
     public Queue orderAuditQueue() {
         return QueueBuilder.durable(ORDER_AUDIT_QUEUE)
@@ -78,7 +82,27 @@ public class RabbitMQConfig {
                 .to(orderEventsExchange)
                 .with(ORDER_AUDIT_ROUTING_KEY);
     }
-    // -----------------------------------------------------------------
+
+    // --- NOVA CONFIGURAÇÃO: Fila e Binding para a Cozinha ---
+    @Bean
+    public Queue kitchenOrderCreatedQueue() {
+        return QueueBuilder.durable(KITCHEN_ORDER_CREATED_QUEUE)
+                .deadLetterExchange(ORDER_EVENTS_DLX)
+                .deadLetterRoutingKey(ORDER_CREATED_DLQ_ROUTING_KEY)
+                .build();
+    }
+
+    @Bean
+    public Binding kitchenOrderCreatedBinding(
+            Queue kitchenOrderCreatedQueue,
+            TopicExchange orderEventsExchange
+    ) {
+        return BindingBuilder
+                .bind(kitchenOrderCreatedQueue)
+                .to(orderEventsExchange)
+                .with(KITCHEN_ORDER_CREATED_ROUTING_KEY);
+    }
+    // --------------------------------------------------------
 
     // 2. Fila de Dead Letter (DLQ)
     @Bean

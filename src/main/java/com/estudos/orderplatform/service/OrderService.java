@@ -3,6 +3,7 @@ package com.estudos.orderplatform.service;
 import com.estudos.orderplatform.config.RabbitMQConfig;
 import com.estudos.orderplatform.domain.Order;
 import com.estudos.orderplatform.domain.OrderItem;
+import com.estudos.orderplatform.domain.OrderStatus;
 import com.estudos.orderplatform.domain.Product;
 import com.estudos.orderplatform.dto.CreateOrderRequestDTO;
 import com.estudos.orderplatform.dto.OrderAuditRequestDTO;
@@ -54,20 +55,19 @@ public class OrderService {
 
         // Mapeia os itens do pedido para uma lista de Map com os detalhes dos produtos
         List<Map<String, Object>> itemPayloads = savedOrder.getItems().stream()
-        .map(item -> Map.<String, Object>of(
-            "productId", item.getProduct().getId(),
-            "productName", item.getProduct().getName(),
-            "quantity", item.getQuantity(),
-            "price", item.getPrice()            
-        ))
-        .toList();    
+            .map(item -> Map.<String, Object>of(
+                "productId", item.getProduct().getId(),
+                "productName", item.getProduct().getName(),
+                "quantity", item.getQuantity(),
+                "price", item.getPrice()            
+            ))
+            .toList();    
 
         // Métricas e Atributos Customizados no New Relic
         NewRelic.addCustomParameter("order.id", savedOrder.getId());
         NewRelic.addCustomParameter("order.customerId", dto.customerId());
         NewRelic.addCustomParameter("order.totalAmount", savedOrder.getTotal().doubleValue());
         NewRelic.addCustomParameter("order.itemsCount", savedOrder.getItems().size());
-
 
         // Evento para o RabbitMQ (consumido pelo MongoDB Audit Service)
         OrderAuditRequestDTO event = new OrderAuditRequestDTO(
@@ -93,5 +93,54 @@ public class OrderService {
             RabbitMQConfig.ORDER_EVENTS_EXCHANGE, savedOrder.getId());
 
         return OrderResponseDTO.fromEntity(savedOrder);
+    }
+
+    @Transactional
+    @Trace(dispatcher = true)
+    public OrderResponseDTO updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        log.info("Iniciando a alteração de status do Pedido ID: {} para {}...", orderId, newStatus);
+
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + orderId));
+
+        OrderStatus previousStatus = order.getStatus();
+
+        // Evita atualizações desnecessárias se o status já for o mesmo
+        if (previousStatus == newStatus) {
+            log.warn("O pedido ID: {} já se encontra no status {}", orderId, newStatus);
+            return OrderResponseDTO.fromEntity(order);
+        }
+
+        order.setStatus(newStatus);
+        Order updatedOrder = orderRepository.save(order);
+
+        // Métricas e Atributos Customizados no New Relic
+        NewRelic.addCustomParameter("order.id", updatedOrder.getId());
+        NewRelic.addCustomParameter("order.previousStatus", previousStatus.name());
+        NewRelic.addCustomParameter("order.newStatus", newStatus.name());
+
+        // Evento genérico de auditoria padronizado para o RabbitMQ/MongoDB
+        OrderAuditRequestDTO event = new OrderAuditRequestDTO(
+            updatedOrder.getId(),
+            "ORDER_STATUS_CHANGED",
+            previousStatus.name(),
+            newStatus.name(),
+            Map.of(
+                "updatedBy", "KDS_PANEL",
+                "totalAmount", updatedOrder.getTotal()
+            )
+        );
+
+        // Certifique-se de usar a constante da sua RabbitMQConfig ou a routing key adequada
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.ORDER_EVENTS_EXCHANGE,
+            "order.status.updated", // Ou RabbitMQConfig.ORDER_STATUS_UPDATED_ROUTING_KEY se declarada
+            event
+        );
+
+        log.info("Status do Pedido ID: {} alterado com sucesso de {} para {} e evento ORDER_STATUS_CHANGED enviado!", 
+            orderId, previousStatus.name(), newStatus.name());
+
+        return OrderResponseDTO.fromEntity(updatedOrder);
     }
 }

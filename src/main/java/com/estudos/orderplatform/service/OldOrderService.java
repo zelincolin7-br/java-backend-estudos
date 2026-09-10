@@ -16,7 +16,7 @@ import com.estudos.orderplatform.domain.OrderItem;
 import com.estudos.orderplatform.domain.Product;
 import com.estudos.orderplatform.dto.OrderItemRequestDto;
 import com.estudos.orderplatform.dto.OrderRequestDto;
-import com.estudos.orderplatform.dto.OrderResponseDto;
+
 import com.estudos.orderplatform.event.OrderCreatedEvent;
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.observability.NewRelicRabbitTrace;

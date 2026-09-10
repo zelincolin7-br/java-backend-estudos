@@ -3,18 +3,17 @@
 
     <property name="APP_NAME" value="${spring.application.name:-order-platform}"/>
 
-    <appender name="CONSOLE_JSON" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <includeMdc>true</includeMdc>
-            <customFields>{"app_name":"${APP_NAME}"}</customFields>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n</pattern>
         </encoder>
     </appender>
 
     <logger name="com.newrelic" level="INFO"/>
-    <logger name="com.estudos.orderplatform.observability" level="DEBUG"/>
+    <logger name="com.estudos.orderplatform" level="DEBUG"/>
 
     <root level="INFO">
-        <appender-ref ref="CONSOLE_JSON"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>

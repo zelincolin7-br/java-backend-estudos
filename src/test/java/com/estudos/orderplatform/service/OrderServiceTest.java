@@ -30,10 +30,6 @@ import com.estudos.orderplatform.domain.OrderStatus;
 import com.estudos.orderplatform.domain.Product;
 import com.estudos.orderplatform.dto.OrderItemRequestDto;
 import com.estudos.orderplatform.dto.OrderRequestDto;
-import com.estudos.orderplatform.dto.OrderResponseDto;
-import com.estudos.orderplatform.event.OrderCreatedEvent;
-import com.estudos.orderplatform.exception.ResourceNotFoundException;
-import com.estudos.orderplatform.repository.OrderRepository;
 import com.estudos.orderplatform.repository.ProductRepository;
 
 

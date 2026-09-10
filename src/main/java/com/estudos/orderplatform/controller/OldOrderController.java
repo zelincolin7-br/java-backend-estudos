@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.estudos.orderplatform.dto.OrderRequestDto;
-import com.estudos.orderplatform.dto.OrderResponseDto;
+
 import com.estudos.orderplatform.service.OrderService;
 
 import io.swagger.v3.oas.annotations.Operation;

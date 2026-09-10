@@ -22,10 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.estudos.orderplatform.domain.OrderStatus;
-import com.estudos.orderplatform.dto.OrderItemResponseDto;
-import com.estudos.orderplatform.dto.OrderRequestDto;
-import com.estudos.orderplatform.dto.OrderResponseDto;
+
 import com.estudos.orderplatform.exception.ResourceNotFoundException;
 import com.estudos.orderplatform.service.OrderService;
 import com.fasterxml.jackson.databind.JsonNode;

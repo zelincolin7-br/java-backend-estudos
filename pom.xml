@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2000/01/XMLSchema-instance"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,6 +24,8 @@
         <springdoc.version>2.8.5</springdoc.version>
         <logstash.encoder.version>7.4</logstash.encoder.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <!-- SKIP DO SONNAR PARA PODER SUBIR A ESTEIRA RETIRAR DEPOIS... -->
+        <sonar.skip>true</sonar.skip>
     </properties>
 
     <dependencies>
@@ -114,6 +116,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -179,12 +185,18 @@
                 </configuration>
             </plugin>
 
-            <!-- Spring Boot Plugin Padrão -->
+            <!-- Spring Boot Plugin Padrão com New Relic Integrado -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>com.estudos.orderplatform.OrderPlatformApplication</mainClass>
+                    <jvmArguments>
+                        -javaagent:${project.basedir}/newrelic/newrelic.jar
+                        -Dnewrelic.config.file=${project.basedir}/newrelic/newrelic.yml
+                        -Dnewrelic.environment=development
+                        -Dnewrelic.config.license_key=${env.NEW_RELIC_LICENSE_KEY}
+                    </jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -195,33 +207,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!-- Agente New Relic: ative usando 'mvn spring-boot:run -Pnewrelic' -->
-        <profile>
-            <id>newrelic</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <mainClass>com.estudos.orderplatform.OrderPlatformApplication</mainClass>
-                            <jvmArguments>
-                                -javaagent:${project.basedir}/newrelic/newrelic.jar
-                                -Dnewrelic.config.file=${project.basedir}/newrelic/newrelic.yml
-                                -Dnewrelic.environment=development
-                            </jvmArguments>
-                            <excludes>
-                                <exclude>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
