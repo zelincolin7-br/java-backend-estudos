@@ -43,13 +43,29 @@ jobs:
     runs-on: self-hosted
     environment: development
     steps:
-      - name: Realizar Deploy em Dev
-        run: echo "Executando processo de deploy no ambiente de DEV..."
+      - name: Gerar arquivo .env no servidor
+        run: |
+          cat << EOF > /home/lincoln/www/order-platform/.env
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}
+          RABBITMQ_PASS=${{ secrets.RABBITMQ_PASS }}
+          NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }}
+          APP_PORT=8080
+          CONTAINER_NAME=order-platform-api
+          EOF
+
+      - name: Realizar Deploy e Subir Containers em Dev
+        working-directory: /home/lincoln/www/order-platform
+        run: |
+          docker compose down
+          docker compose up -d --build
 
   deploy-test:
     name: Deploy - Ambiente TEST
     needs: code-quality
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.ref == 'refs/staging' && github.event_name == 'push'
     runs-on: self-hosted
     environment: testing
     steps:
