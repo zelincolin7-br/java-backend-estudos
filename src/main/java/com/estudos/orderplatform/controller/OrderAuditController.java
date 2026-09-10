@@ -33,6 +33,7 @@ public class OrderAuditController {
         return ResponseEntity.ok(history);
     }
 
+    @GetMapping("/active")
     public ResponseEntity<List<OrderAuditLog>> getActiveOrders() {
         List<OrderAuditLog> orders = auditService.findActiveOrders();
         return ResponseEntity.ok(orders);
